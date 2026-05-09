@@ -3,7 +3,6 @@
 const { ObjectId } = require("mongodb");
 
 const mongoose = require('mongoose');
-const Favourite = require("./favourites");
 
 
 const homeSchema = mongoose.Schema({

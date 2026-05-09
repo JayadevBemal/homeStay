@@ -18,10 +18,7 @@ app.use(express.static(path.join(rootPath, "public")));
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-const store = new MongoDBStore({
-  uri:  "mongodb+srv://rootuser:rootpassword@firsttime.ntfaamf.mongodb.net/airbnb?appName=firsttime",
-  collection: 'sessions'
-})
+let store;
 
 app.use(express.urlencoded());
 
@@ -29,10 +26,13 @@ app.use(session({
   secret: "abcd",
   resave: false,
   saveUninitialized: true,
-  store: store
+  store: new MongoDBStore({
+  uri:  "mongodb+srv://rootuser:rootpassword@firsttime.ntfaamf.mongodb.net/airbnb?appName=firsttime",
+  collection: 'sessions'
+})
 }))
 app.use((req,res,next) => {
-  console.log(req.session);
+  console.log(req.session.isLoggedIn);
   req.isLoggedIn = req.session.isLoggedIn;
 
     next()
