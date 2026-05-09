@@ -4,7 +4,7 @@ const Favourite = require("../models/favourites");
 exports.getAddHome = (req, res, next) => {
   res.render("host/add-home", {
     pageTitle: "Home Registration",
-    editing: false,
+    editing: false,isLoggedIn: req.isLoggedIn
   });
 };
 
@@ -19,6 +19,7 @@ exports.getEditHome = (req, res, next) => {
       pageTitle: "Home Editing",
       editing: editing,
       home: home,
+      isLoggedIn: req.isLoggedIn
     });
   });
 };
@@ -79,6 +80,7 @@ exports.getHomePage = (req, res, next) => {
         registeredHomes: registeredHomes,
         pageTitle: "Airbnb",
         fav: ids,
+        isLoggedIn: req.isLoggedIn
       });
     });
   });
@@ -89,6 +91,7 @@ exports.getHomeList = (req, res, next) => {
     res.render("store/home-list", {
       registeredHomes: registeredHomes,
       pageTitle: "Home-List",
+      isLoggedIn: req.isLoggedIn
     });
   });
 };
@@ -101,24 +104,25 @@ exports.getFavourites = (req, res, next) => {
       res.render("store/favourites", {
         pageTitle: "Favourite Page",
         homes: favHomes,
+        isLoggedIn: req.isLoggedIn
       });
     });
   ;
 };
 
 exports.getBookings = (req, res, next) => {
-  res.render("store/bookings", { pageTitle: "Bookings Page" });
+  res.render("store/bookings", { pageTitle: "Bookings Page", isLoggedIn: req.isLoggedIn });
 };
 
 exports.getReserves = (req, res, next) => {
-  res.render("store/reserve", { pageTitle: "Reserve Page" });
+  res.render("store/reserve", { pageTitle: "Reserve Page" , isLoggedIn: req.isLoggedIn });
 };
 
 exports.getHostHomeList = (req, res, next) => {
   Home.find().then((registeredHomes) => {
     res.render("host/host-home-list", {
       registeredHomes: registeredHomes,
-      pageTitle: "Host-Home-List",
+      pageTitle: "Host-Home-List",isLoggedIn: req.isLoggedIn
     });
   });
 };
@@ -131,6 +135,7 @@ exports.getHomeDetails = (req, res, next) => {
       pageTitle: "DetailsofHome",
       home: home,
       homeId: homeId,
+      isLoggedIn: req.isLoggedIn
     });
   });
 };
