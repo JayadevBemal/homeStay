@@ -1,6 +1,6 @@
 const Home = require("../models/home");
 const User = require('../models/user')
-
+const fs = require('fs');
 exports.getAddHome = (req, res, next) => {
   res.render("host/add-home", {
     pageTitle: "Home Registration",
@@ -32,10 +32,13 @@ exports.postAddHome = (req, res, next) => {
     pricePerNight,
     location,
     rating,
-    homeImage,
     _id,
     description,
   } = req.body;
+  if(!req.file){
+    return res.status(422).send("no photo provided");
+  }
+  const homeImage = req.file.path;
   const home = new Home({
     houseName,
     pricePerNight,
@@ -45,6 +48,7 @@ exports.postAddHome = (req, res, next) => {
     _id,
     description,
   });
+  console.log(req.file)
   home.save().then(() => {
     console.log("home saved");
     return res.redirect("/host/home-list");
@@ -57,7 +61,6 @@ exports.postEditHome = (req, res, next) => {
     pricePerNight,
     location,
     rating,
-    homeImage,
     _id,
     description,
   } = req.body;
@@ -67,7 +70,10 @@ exports.postEditHome = (req, res, next) => {
     home.pricePerNight = pricePerNight;
     home.location = location;
     home.rating = rating;
-    home.homeImage = homeImage;
+    if(req.file){
+      fs.unlink(home.homeImage, (err)=>{console.log(err)})
+      home.homeImage = req.file.path;
+    }
     home.description = description;
     home.save().then(() => res.redirect('/home-list')).catch(err => console.log(err))
   }).catch(err => console.log(err))

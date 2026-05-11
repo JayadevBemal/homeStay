@@ -3,6 +3,7 @@ dns.setServers(["8.8.8.8", "8.8.4.4"]); // Use Google DNS
 
 const express = require("express");
 const app = express();
+const multer = require('multer');
 const userRouter = require("./routes/userRouter");
 const { hostRouter } = require("./routes/hostRouter");
 const {authRouter} = require('./routes/authRouter')
@@ -13,7 +14,7 @@ const { default: mongoose } = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require('connect-mongodb-session') (session);
 
-app.use(express.static(path.join(rootPath, "public")));
+
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -21,6 +22,38 @@ app.set("views", "views");
 let store;
 
 app.use(express.urlencoded());
+app.use(express.static(path.join(rootPath, "public")));
+app.use("/uploads",express.static(path.join(rootPath,'uploads')))
+
+const randomString = (length) => {
+  const characters = 'abcdefghijklmnopqrstuvwxyz';
+  let result = '';
+
+  for(let i = 0;i < length;i++){
+    result += characters.charAt(Math.floor(Math.random()* characters.length)) ;
+    
+  }
+  return result;
+}
+const multerStorage = multer.diskStorage({
+  destination: (req,file,cb) => {
+    cb(null,'uploads/');
+  },
+  filename: (req,file,cb) => {
+    cb(null,randomString(10)+'-'+file.originalname)
+  }
+})
+
+const fileFilter = (req,file,cb) => {
+
+  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+    cb(null,true);
+  }else{
+    cb(null,false);
+  }
+}
+
+ app.use(multer({storage:multerStorage,fileFilter: fileFilter}).single('homeImage'))
 
 app.use(session({
   secret: "abcd",
