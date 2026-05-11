@@ -74,17 +74,22 @@ exports.postEditHome = (req, res, next) => {
 };
 
 exports.getHomePage = async (req, res, next) => {
-
-  const userId = req.session.user._id;
-  const user = await User.findById(userId).populate('favourites')
+let userId;
+let user = req.session.user;
+if(req.session.isLoggedIn){
+   userId = req.session.user._id;
+   user = await User.findById(userId).populate('favourites')
+}
+  
 
   Home.find().then((registeredHomes) => {
 
     res.render("store/home", {
         registeredHomes: registeredHomes,
         pageTitle: "Airbnb",
-        fav: user.favourites ,
-        isLoggedIn: req.session.isLoggedIn || false,user:req.session.user  || {}
+        fav: user?.favourites || [],
+        isLoggedIn: req.session.isLoggedIn,
+        user:req.session.user
       });
   });
 };

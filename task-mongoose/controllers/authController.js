@@ -37,11 +37,9 @@ exports.postLogin = async (req,res,nex) => {
       oldInput: {}
    })
   }else{
-
-    const userObj = user.toObject();
-    userObj._id = user._id.toString()
+    const stringUser = JSON.parse(JSON.stringify(user));;
     req.session.isLoggedIn = true;
-    req.session.user = userObj;
+    req.session.user = stringUser;
     req.session.save((err) => {
     if (err) {
         console.error("Session save error:", err);

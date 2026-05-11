@@ -32,7 +32,7 @@ app.use(session({
 })
 }))
 app.use((req,res,next) => {
-  console.log(req.session.isLoggedIn);
+  
   req.isLoggedIn = req.session.isLoggedIn;
 
     next()
