@@ -1,0 +1,21 @@
+function Todoitem1(){
+
+
+  let todoName = 'Jayadev';
+  let todoDate = '02/04/2026';
+
+
+  return <div class="container text-center">
+        <div class="row items">
+          <div class="col-6">{todoName}</div>
+          <div class="col-4">{todoDate}</div>
+          <div class="col-2">
+            <button type="button" class="btn btn-danger jb-button">
+              Delete
+            </button>
+          </div>
+        </div>
+        </div>
+}
+
+export default Todoitem1;
