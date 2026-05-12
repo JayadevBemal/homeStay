@@ -1,49 +1,69 @@
-import { createContext ,useReducer} from "react";
+import { createContext, useReducer } from "react";
 import { useEffect } from "react";
+import { deletetodoItem, getTodoItems, markItemCompleted } from "./services/itemService";
 
 export let todoContext = createContext();
 
-
 const todoitemsReducer = (todolist, action) => {
-let newtodoitems = todolist;
-if (action.type === "NEW_ITEM") {
-  newtodoitems = [...todolist, action.payload];
-  return newtodoitems;
-} else if (action.type === "CUT_ITEM") {
-  newtodoitems = todolist.filter((i, j) => j !== action.payload);
-  return newtodoitems;
-}
+  let newtodoitems = todolist;
+  if (action.type === "NEW_ITEM") {
+    newtodoitems = [...todolist, action.payload];
+    return newtodoitems;
+  } else if (action.type === "CUT_ITEM") {
+    newtodoitems = todolist.filter((i, j) => i._id !== action.payload);
+    return newtodoitems;
+  } else if (action.type === "LOAD_ITEMS") {
+    return action.payload;
+  } else if (action.type === "TOGGLE_COMPLETED") {
+    newtodoitems = todolist.map((item) =>
+      item._id === action.payload
+        ? { ...item, completed: !item.completed }
+        : item
+    );
+    return newtodoitems;
+  }
 };
-const Todoitemprovider = ({children}) => {
-   let [todolist, dispatchtodolist] = useReducer(todoitemsReducer, JSON.parse(localStorage.getItem('todolist') ) ||[]); 
 
+const Todoitemprovider = ({ children }) => {
+  let [todolist, dispatchtodolist] = useReducer(todoitemsReducer, []);
 
   useEffect(() => {
-    localStorage.setItem('todolist',JSON.stringify(todolist) )
-  },[todolist] )
-  
+    const loaditems = getTodoItems().then((list) => {
+      dispatchtodolist({ type: "LOAD_ITEMS", payload: list });
+    });
+  }, []);
+
   let addnewItem = (event) => {
     const newItem = {
       type: "NEW_ITEM",
       payload: event,
     };
     dispatchtodolist(newItem);
-
   };
-  let deleteItem = (todelete) => {
+
+  let deleteItem = async (todelete) => {
+    const deletedId = await deletetodoItem(todelete);
+
     const removeitem = {
       type: "CUT_ITEM",
       payload: todelete,
     };
     dispatchtodolist(removeitem);
-  }
+  };
 
+  let toggleCompleted = async (itemId) => {
+    await markItemCompleted(itemId);
+    dispatchtodolist({
+      type: "TOGGLE_COMPLETED",
+      payload: itemId,
+    });
+  };
 
-    return (
-
- <todoContext.Provider value={{todolist,addnewItem,deleteItem}}>
- {children}
- </todoContext.Provider>
+  return (
+    <todoContext.Provider value={{ todolist, addnewItem, deleteItem, toggleCompleted }}>
+      {children}
+    </todoContext.Provider>
   );
- }
- export default Todoitemprovider       
+};
+
+export default Todoitemprovider;
